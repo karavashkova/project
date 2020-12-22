@@ -9,55 +9,97 @@ import os
 pygame.init()
 
 screen = pygame.display.set_mode((1325, 900), pygame.DOUBLEBUF, 32)
-
 backscreen = pygame.image.load('/home/qrewetka/Изображения/background.png')
 chipscreen = pygame.image.load('/home/qrewetka/Изображения/chip.png')
 bonescreen = pygame.image.load('/home/qrewetka/Изображения/0.png')
 againbuttonscreen = pygame.image.load('/home/qrewetka/Изображения/again.png')
 
 
-finished = True
 
-def click (event):
-    
-    global a
-    a=(event.pos[0], event.pos[1])
+
+
+X = [1132, 1046, 960, 1132, 1046, 960, 1132, 1046, 960, 1132, 1046, 960]  # координаты фишек
+Y = [85, 85, 85, 170, 170, 170, 255, 255, 255, 340, 340, 340] #координаты фишек
+Xc = [1132, 1046, 960, 874, 788, 700, 516, 429, 342, 255, 168, 81] 
+
+a = [] #для курсора
+C = [0, 0]
 
 bones = ['/home/qrewetka/Изображения/0.png', '/home/qrewetka/Изображения/1.png','/home/qrewetka/Изображения/2.png', '/home/qrewetka/Изображения/3.png', '/home/qrewetka/Изображения/4.png','/home/qrewetka/Изображения/5.png','/home/qrewetka/Изображения/6.png']
 
-X=[1132, 1048, 960, 877, 792, 515, 430, 345, 260, 175, 90]
-Y=[45, 70]
 
-P1=[1092, 1007, 918, 830, 740, 655, 480, 390, 302, 214, 125, 38]
-X = [90, 175, 260, 345, 430, 515, 705, 790, 875, 960, 1051, 1136]
-b1=0
-b2=0
-que=3
+l = len(X)
+
+clickt = True
+finished = True
+
+s = 0
+h = True
+
+
+
+def click (event):
+    
+    global a, h, clickt
+    
+    a=(event.pos[0], event.pos[1])
+    h = not h
+    clickt = not clickt
+
+
+class chip(object):
+    def __init__(self, index):
+        self.index = index
+    
+    def x1(self):
+        return X[self.index]
+
+    def y1(self):
+        return Y[self.index]
+    
+    def set(self):
+        screen.blit(chipscreen, (self.x1()-37, self.y1()-37))
+
+
+chiplist = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
+for i in range (l):
+    chiplist[i-1] = chip(i)
+
 
 while finished == True:
 
     screen.blit(backscreen, (0, 0, 0, 0))
-    screen.blit(chipscreen, (P1[0]+4, Y[0]))
-    screen.blit(chipscreen, (P1[que]+4, Y[1]))
-    bonescreen = pygame.image.load(bones[b1])
-    screen.blit(bonescreen, (210, 400))
-    bonescreen = pygame.image.load(bones[b2])
-    screen.blit(bonescreen, (250, 400))
-    screen.blit(againbuttonscreen, (290, 400))
-    pygame.display.update()
+    for i in range (l):
+        chip.set(chiplist[i-1])
+    
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = False
         elif event.type == MOUSEBUTTONDOWN:
-            a=[]
-            click(event) 
+            click(event)
+            
+            
+            for i in range (l):                
+                if ((a[0]-X[i-1])**2 + (a[1]-Y[i-1])**2)**0.5 <= 25 and (clickt == False):
+                    s=i-1
+                    X[s] = a[0]
+                    Y[s] = a[1]
+                    
+                                            
+        elif pygame.mouse.get_focused() and (h == False):
+            
+            a = pygame.mouse.get_pos()
+            X[s] = a[0]-37
+            Y[s] = a[1]-37
 
-            if (a[0] >= 290 and a[0] <= 320) and (a[1] >= 400 and a[1] <= 430):
-                b1=randint(1,6)
-                b2=randint(1,6)
-            for i in range(0, 12):
-                if (a[0] <= P1[i] and a[0] >= P1[i+1]) and (a[1] <= 100):
-                    que=que+b1+b2
+        
+    
+
+    
+    pygame.display.update()
 
 
 
